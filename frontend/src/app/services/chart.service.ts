@@ -22,7 +22,7 @@ export class ChartService {
   private cameraY = 0;
 
   initialize(canvas: HTMLCanvasElement, points: Point[]): void {
-    this.vanImage.src = '/van-cropped.png';
+    this.vanImage.src = '/van-updated.png';
 
     this.vanImage.onload = () => {
       const ctx = canvas.getContext('2d');
