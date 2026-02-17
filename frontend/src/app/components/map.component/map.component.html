@@ -1,21 +1,58 @@
 <div class="container">
-  <h2>EcoRoutes - TSP Optimizer</h2>
 
+  <!-- ===== CONTROLS ===== -->
   <div class="controls">
-    <!-- Botões de ação -->
-    <button (click)="toggleManualMode()" [class.active]="manualMode" class="manual">
-      {{ manualMode ? 'Modo Manual Ativo' : 'Modo Manual (clique no gráfico)' }}
+
+    <button
+      class="manual"
+      [class.active]="manualMode"
+      (click)="toggleManualMode()">
+      {{ manualMode ? 'Manual Mode Active' : 'Enable Manual Mode' }}
     </button>
-    <button (click)="addRandomPoint()">+ Ponto Aleatório</button>
-    <button (click)="generate20RandomPoints()">+ 20 Pontos Aleatórios</button>
-    <button (click)="optimize()" class="primary">Otimizar Rota</button>
-    <button (click)="clear()" class="danger">Limpar Tudo</button>
+
+    <button class="primary" (click)="addRandomPoint()">
+      + Random Point
+    </button>
+
+    <button class="primary" (click)="generate20RandomPoints()">
+      + 20 Random Points
+    </button>
+
+    <button class="primary" (click)="optimize()">
+      Optimize Route
+    </button>
+
+    <button class="danger" (click)="clear()">
+      Clear All
+    </button>
+
   </div>
 
+  <!-- ===== SPEED CONTROL ===== -->
+  <div class="speed-control">
+    Van Speed:
+    <input
+      type="range"
+      min="0.5"
+      max="5"
+      step="0.1"
+      value="1"
+      (input)="changeSpeed($event)"
+    />
+  </div>
+
+  <!-- ===== MAP ===== -->
   <div class="map-container">
-    <canvas #rotaCanvas width="600" height="250" class="map-svg" (click)="onCanvasClick($event)"></canvas>
+    <canvas
+      #routeCanvas
+      class="map-canvas"
+      (click)="onCanvasClick($event)">
+    </canvas>
   </div>
 
-  <!-- Instruções rápidas -->
-  <p class="hint" *ngIf="manualMode">Clique no gráfico para adicionar um ponto na posição clicada.</p>
+  <!-- ===== HINT ===== -->
+  <div class="hint" *ngIf="manualMode">
+    Click anywhere on the map to add delivery points.
+  </div>
+
 </div>

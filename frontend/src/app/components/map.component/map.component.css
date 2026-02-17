@@ -1,3 +1,5 @@
+/* ===== PAGE ===== */
+
 .container {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -5,7 +7,10 @@
   background-color: #121212;
   color: white;
   min-height: 100vh;
+  box-sizing: border-box;
 }
+
+/* ===== CONTROLS ===== */
 
 .controls {
   margin-bottom: 20px;
@@ -13,22 +18,37 @@
 
 button {
   padding: 10px 20px;
-  margin: 0 5px;
+  margin: 0 6px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: all 0.25s ease;
+  font-size: 14px;
+}
+
+button:hover {
+  transform: translateY(-2px);
 }
 
 button.primary {
   background-color: #00ffcc;
   color: #000;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+button.primary:hover {
+  background-color: #00ddb0;
 }
 
 button.danger {
   background-color: #ff4081;
   color: #fff;
+  box-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+}
+
+button.danger:hover {
+  background-color: #e73370;
 }
 
 button.manual {
@@ -38,26 +58,70 @@ button.manual {
 
 button.manual.active {
   background-color: #ffcc66;
-  box-shadow: 0 0 10px #ffaa00;
+  box-shadow: 0 0 15px #ffaa00;
 }
+
+/* ===== SPEED SLIDER ===== */
+
+.speed-control {
+  margin-top: 10px;
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.speed-control input[type="range"] {
+  width: 220px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* ===== MAP CONTAINER (CRITICAL FIX) ===== */
 
 .map-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  width: 100%;
+  max-width: 1100px;
+  height: 480px;               /* 🔥 REQUIRED FOR CHART.JS */
+  margin: 20px auto 0 auto;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.08);
+  box-sizing: border-box;
 }
 
-.map-svg {
-  border: 2px solid #333;
+/* ===== CANVAS FIX (VERY IMPORTANT) ===== */
+
+.map-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
   border-radius: 8px;
-  background-color: #1e1e1e;
-  width: 100%;
-  height: auto;
+  background-color: #111;
   cursor: crosshair;
 }
 
+/* ===== HINT TEXT ===== */
+
 .hint {
   color: #ffaa00;
-  margin-top: 10px;
+  margin-top: 12px;
   font-style: italic;
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .map-container {
+    height: 380px;
+  }
+
+  button {
+    margin: 5px 4px;
+    padding: 8px 14px;
+  }
+
+  .speed-control input[type="range"] {
+    width: 160px;
+  }
 }
