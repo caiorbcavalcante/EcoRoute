@@ -18,6 +18,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 button.primary {
@@ -30,6 +31,16 @@ button.danger {
   color: #fff;
 }
 
+button.manual {
+  background-color: #ffaa00;
+  color: #000;
+}
+
+button.manual.active {
+  background-color: #ffcc66;
+  box-shadow: 0 0 10px #ffaa00;
+}
+
 .map-container {
   display: flex;
   justify-content: center;
@@ -39,4 +50,14 @@ button.danger {
 .map-svg {
   border: 2px solid #333;
   border-radius: 8px;
+  background-color: #1e1e1e;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+}
+
+.hint {
+  color: #ffaa00;
+  margin-top: 10px;
+  font-style: italic;
 }
