@@ -1,5 +1,4 @@
 /* ===== PAGE ===== */
-
 .container {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -11,7 +10,6 @@
 }
 
 /* ===== CONTROLS ===== */
-
 .controls {
   margin-bottom: 20px;
 }
@@ -62,7 +60,6 @@ button.manual.active {
 }
 
 /* ===== SPEED SLIDER ===== */
-
 .speed-control {
   margin-top: 10px;
   color: #00ffcc;
@@ -75,12 +72,11 @@ button.manual.active {
   cursor: pointer;
 }
 
-/* ===== MAP CONTAINER (CRITICAL FIX) ===== */
-
+/* ===== MAP CONTAINER ===== */
 .map-container {
   width: 100%;
   max-width: 1100px;
-  height: 480px;               /* 🔥 REQUIRED FOR CHART.JS */
+  height: 600px; /* altura maior */
   margin: 20px auto 0 auto;
   background-color: #1e1e1e;
   border-radius: 12px;
@@ -89,8 +85,7 @@ button.manual.active {
   box-sizing: border-box;
 }
 
-/* ===== CANVAS FIX (VERY IMPORTANT) ===== */
-
+/* ===== CANVAS ===== */
 .map-canvas {
   width: 100% !important;
   height: 100% !important;
@@ -100,8 +95,7 @@ button.manual.active {
   cursor: crosshair;
 }
 
-/* ===== HINT TEXT ===== */
-
+/* ===== HINT ===== */
 .hint {
   color: #ffaa00;
   margin-top: 12px;
@@ -110,10 +104,9 @@ button.manual.active {
 }
 
 /* ===== RESPONSIVE ===== */
-
 @media (max-width: 768px) {
   .map-container {
-    height: 380px;
+    height: 450px;           /* ajustado */
   }
 
   button {

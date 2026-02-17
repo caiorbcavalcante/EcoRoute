@@ -1,0 +1,29 @@
+<div class="info-panel">
+  <h3>📦 Informações da Rota</h3>
+  <div class="info-row">
+    <span>Distância total:</span>
+    <span>{{ totalDistance | number:'1.2-2' }} km</span>
+  </div>
+  <div class="info-row" *ngIf="remainingDistance !== undefined">
+    <span>Distância restante:</span>
+    <span>{{ remainingDistance | number:'1.2-2' }} km</span>
+  </div>
+  <div class="info-row" *ngIf="distanceToNext !== undefined">
+    <span>Próxima entrega:</span>
+    <span>{{ distanceToNext | number:'1.2-2' }} km</span>
+  </div>
+  <div class="info-row">
+    <span>Entregas realizadas:</span>
+    <span>{{ currentSegment || 0 }} / {{ deliveriesCount }}</span>
+  </div>
+  <div class="info-row">
+    <span>Energia consumida:</span>
+    <span>{{ energyConsumed | number:'1.2-2' }} kWh</span>
+  </div>
+  <div class="info-row">
+    <span>Energia restante:</span>
+    <span [style.color]="remainingEnergy < 20 ? 'red' : '#00ffcc'">
+      {{ remainingEnergy | number:'1.2-2' }} kWh
+    </span>
+  </div>
+</div>
