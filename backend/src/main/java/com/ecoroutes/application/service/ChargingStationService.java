@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class ChargingStationService {
     private final ConcurrentHashMap<Long, ChargingStation> store = new ConcurrentHashMap<>();
@@ -37,5 +39,11 @@ public class ChargingStationService {
             double power = 50 + Math.random() * 100;
             create(name, x, y, power);
         }
+    }
+
+
+    @PostConstruct
+    public void init() {
+        System.out.println("✅ ChargingStationService bean CREATED");
     }
 }
