@@ -1,6 +1,7 @@
 package com.ecoroutes.api.controller;
 
 import com.ecoroutes.api.dto.ChargingStationDTO;
+import com.ecoroutes.api.dto.LocationDTO;
 import com.ecoroutes.application.service.ChargingStationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,30 +21,29 @@ public class ChargingStationController {
 
     @GetMapping
     public List<ChargingStationDTO> getAllStations() {
-        return stationService.findAll().stream()
-                .map(s -> new ChargingStationDTO(
-                        s.getId(),
-                        s.getName(),
-                        s.getLocation().getX(),
-                        s.getLocation().getY(),
-                        s.getPower()))
-                .collect(Collectors.toList());
+    return stationService.findAll().stream()
+            .map(s -> new ChargingStationDTO(
+                    s.getId(),
+                    s.getName(),
+                    new LocationDTO(s.getLocation().getX(), s.getLocation().getY()), // 👈 wrap coordinates
+                    s.getPower()))
+            .collect(Collectors.toList());
     }
 
     @PostMapping
     public ChargingStationDTO createStation(@RequestBody ChargingStationDTO dto) {
         var station = stationService.create(
-                dto.getName(),
-                dto.getX(),
-                dto.getY(),
-                dto.getPower()
-        );
-        return new ChargingStationDTO(
-                station.getId(),
-                station.getName(),
-                station.getLocation().getX(),
-                station.getLocation().getY(),
-                station.getPower()
+        dto.getName(),
+        dto.getLocation().getX(),  // 👈 now access via location
+        dto.getLocation().getY(),
+        dto.getPower()
+    );
+    
+    return new ChargingStationDTO(
+        station.getId(),
+        station.getName(),
+        new LocationDTO(station.getLocation().getX(), station.getLocation().getY()),
+        station.getPower()
         );
     }
 

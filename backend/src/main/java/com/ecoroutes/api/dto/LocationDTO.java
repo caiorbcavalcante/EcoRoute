@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChargingStationDTO {
-    private Long id;
-    private String name;
-    private LocationDTO location;  
-    private double power;
+public class LocationDTO {
+    private double x;
+    private double y;
 }
