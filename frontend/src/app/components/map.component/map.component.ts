@@ -160,8 +160,10 @@ export class MapComponent implements AfterViewInit {
     for (let i = 0; i < 5; i++) {
       const station = {
         name: `Station ${Math.floor(Math.random() * 100)}`,
-        x: Math.random() * 200 - 100,
-        y: Math.random() * 200 - 100,
+        location: {
+          x: Math.random() * 200 - 100,
+          y: Math.random() * 200 - 100,
+        },
         power: 50 + Math.random() * 100
       };
       this.chargingStationService.create(station).subscribe(() => {
@@ -173,7 +175,9 @@ export class MapComponent implements AfterViewInit {
   clearStations(): void {
     this.chargingStationService.getAll().subscribe(stations => {
       stations.forEach(s => {
-        this.chargingStationService.delete(s.id).subscribe();
+        if (s.id !== undefined) {
+          this.chargingStationService.delete(s.id).subscribe();
+        }
       });
       this.refreshStations();
     });

@@ -1,8 +1,11 @@
-import { Point } from './point.model';
+export interface Location {
+  x: number;
+  y: number;
+}
 
 export interface ChargingStation {
-  id: number;
+  id?: number;
   name: string;
-  location: Point;
+  location: Location;
   power: number;
 }
