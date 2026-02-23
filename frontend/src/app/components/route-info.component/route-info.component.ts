@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BatteryService } from '../../services/battery.service';
-import { Subscription, interval } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-route-info',
@@ -15,8 +15,8 @@ export class RouteInfoComponent implements OnInit, OnDestroy {
   @Input() deliveriesCount: number = 0;
   @Input() currentSegment?: number;
   @Input() totalSegments?: number;
-  @Input() distanceToNext?: number; // distância até o próximo ponto
-  @Input() remainingDistance?: number; // distância restante total
+  @Input() distanceToNext?: number;
+  @Input() remainingDistance?: number; 
 
   energyConsumed: number = 0;
   remainingEnergy: number = 100;
@@ -25,9 +25,9 @@ export class RouteInfoComponent implements OnInit, OnDestroy {
   constructor(private batteryService: BatteryService) {}
 
   ngOnInit() {
-    this.batterySub = interval(100).subscribe(() => {
-      this.remainingEnergy = this.batteryService.getBatteryLevel();
-      this.energyConsumed = 100 - this.remainingEnergy;
+    this.batterySub = this.batteryService.batteryLevel$.subscribe(level => {
+      this.remainingEnergy = level;
+      this.energyConsumed = 100 - level;
     });
   }
 

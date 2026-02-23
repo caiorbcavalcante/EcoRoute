@@ -1,5 +1,6 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import { RouteService } from '../../services/route.service';
 import { ChartService } from '../../services/chart.service';
 import { BatteryService } from '../../services/battery.service';
@@ -14,7 +15,7 @@ import { RouteInfoComponent } from '../route-info.component/route-info.component
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('routeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   points: Point[] = [{ x: 0, y: 0 }];
   optimizedRoute: Point[] = [];
@@ -25,6 +26,8 @@ export class MapComponent implements AfterViewInit {
   distanceToNext?: number;
   remainingDistance?: number;
 
+  private batterySub?: Subscription;
+
   constructor(
     private routeService: RouteService,
     private chartService: ChartService,
@@ -34,12 +37,16 @@ export class MapComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.chartService.initialize(this.canvasRef.nativeElement, this.points);
-    this.remainingEnergy = this.batteryService.getBatteryLevel();
+    
+    // Instantly reacts to battery changes without setInterval
+    this.batterySub = this.batteryService.batteryLevel$.subscribe(level => {
+      this.remainingEnergy = level;
+    });
+
     this.batteryService.batteryDepleted$.subscribe(() => {
       alert('⚡ Vehicle ran out of battery!');
     });
 
-    // Carregar estações de recarga
     this.chargingStationService.getAll().subscribe({
       next: (stations) => {
         this.chartService.setChargingStations(stations);
@@ -47,10 +54,10 @@ export class MapComponent implements AfterViewInit {
       },
       error: (err) => console.error('Erro ao carregar estações', err)
     });
+  }
 
-    setInterval(() => {
-      this.remainingEnergy = this.batteryService.getBatteryLevel();
-    }, 100);
+  ngOnDestroy(): void {
+    this.batterySub?.unsubscribe();
   }
 
   toggleManualMode(): void {
@@ -107,7 +114,6 @@ export class MapComponent implements AfterViewInit {
     this.chartService.setSpeed(value);
   }
 
-  // Otimização vizinho mais próximo
   optimize(): void {
     if (this.points.length < 2) return;
     const depot = this.points[0];
@@ -129,19 +135,15 @@ export class MapComponent implements AfterViewInit {
         this.batteryService.resetBattery();
         this.totalDistance = response.totalDistance;
         this.chartService.drawRoute(response.path, response.totalDistance);
-        console.log('Total Distance:', response.totalDistance);
       },
       error: (err) => console.error(err)
     });
   }
 
-  // Rota FIFO (ordem de inserção)
   fifoRoute(): void {
     if (this.points.length < 2) return;
     const depot = this.points[0];
-    // A rota FIFO é simplesmente a ordem dos pontos (sem otimização)
     const fifoPath = [depot, ...this.points.slice(1), depot];
-    // Calcula a distância total (para exibir)
     let totalDist = 0;
     for (let i = 0; i < fifoPath.length - 1; i++) {
       const a = fifoPath[i];
@@ -154,9 +156,7 @@ export class MapComponent implements AfterViewInit {
     this.chartService.drawRoute(fifoPath, totalDist);
   }
 
-  // Gerar estações aleatórias (para teste)
   generateStations(): void {
-    // Cria 5 estações aleatórias via backend
     for (let i = 0; i < 5; i++) {
       const station = {
         name: `Station ${Math.floor(Math.random() * 100)}`,

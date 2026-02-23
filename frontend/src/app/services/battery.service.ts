@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -7,27 +7,36 @@ import { Subject } from 'rxjs';
 export class BatteryService {
   private readonly MAX_BATTERY = 100;
   private readonly CONSUMPTION_RATE = 0.05;
-  private batteryLevel = this.MAX_BATTERY;
+  
+  // BehaviorSubject holds the current state and emits it immediately to any new subscribers
+  private batteryLevelSubject = new BehaviorSubject<number>(this.MAX_BATTERY);
+  batteryLevel$ = this.batteryLevelSubject.asObservable();
+
   private batteryDepletedSubject = new Subject<void>();
   batteryDepleted$ = this.batteryDepletedSubject.asObservable();
 
   getBatteryLevel(): number {
-    return this.batteryLevel;
+    return this.batteryLevelSubject.value;
   }
 
   resetBattery(): void {
-    this.batteryLevel = this.MAX_BATTERY;
+    this.batteryLevelSubject.next(this.MAX_BATTERY);
   }
 
   consume(distance: number): void {
-    this.batteryLevel -= distance * this.CONSUMPTION_RATE;
-    if (this.batteryLevel <= 0) {
-      this.batteryLevel = 0;
+    let currentLevel = this.batteryLevelSubject.value;
+    currentLevel -= distance * this.CONSUMPTION_RATE;
+    
+    if (currentLevel <= 0) {
+      currentLevel = 0;
+      this.batteryLevelSubject.next(currentLevel);
       this.batteryDepletedSubject.next();
+    } else {
+      this.batteryLevelSubject.next(currentLevel);
     }
   }
 
   recharge(): void {
-    this.batteryLevel = this.MAX_BATTERY;
+    this.batteryLevelSubject.next(this.MAX_BATTERY);
   }
 }
