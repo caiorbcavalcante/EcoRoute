@@ -18,7 +18,6 @@ public class Route {
         this.path = path;
         this.totalDistance = totalDistance;
 
-        // Taxa de consumo ajustada para 0.05 (igual ao frontend)
         double consumptionRate = 0.05;
         this.energyUsed = totalDistance * consumptionRate;
         this.remainingEnergy = vehicle.getMaxAutonomy() - energyUsed;

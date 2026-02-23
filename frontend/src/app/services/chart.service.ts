@@ -292,10 +292,10 @@ export class ChartService {
       }
 
       // Ângulo da van: apontar para a direção do movimento
-      const targetAngle = Math.atan2(end.y - start.y, end.x - start.x);
+      const targetAngle = Math.atan2(end.x - start.x, end.y - start.y);
       const diff = this.normalizeAngle(targetAngle - this.currentAngle);
-      this.currentAngle += diff * 0.15;
-      const rotationDegrees = (this.currentAngle * 180 / Math.PI) + 90; // +90 se imagem apontar para cima
+      this.currentAngle += diff;
+      const rotationDegrees = (this.currentAngle * 180 / Math.PI); // +90 se imagem apontar para cima
 
       (this.chart.data.datasets[3].data as any) = [{ x: currentX, y: currentY }];
       (this.chart.data.datasets[3] as any).rotation = rotationDegrees;

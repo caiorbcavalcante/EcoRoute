@@ -11,5 +11,5 @@ public class ChargingStation {
     private Long id;
     private String name;
     private Coordinate location;
-    private double power; // kW (potência de recarga)
+    private double power; 
 }

@@ -44,6 +44,6 @@ public class ChargingStationService {
 
     @PostConstruct
     public void init() {
-        System.out.println("✅ ChargingStationService bean CREATED");
+        System.out.println("ChargingStationService bean CREATED");
     }
 }

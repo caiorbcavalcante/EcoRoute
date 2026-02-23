@@ -25,7 +25,7 @@ public class ChargingStationController {
             .map(s -> new ChargingStationDTO(
                     s.getId(),
                     s.getName(),
-                    new LocationDTO(s.getLocation().getX(), s.getLocation().getY()), // 👈 wrap coordinates
+                    new LocationDTO(s.getLocation().getX(), s.getLocation().getY()), 
                     s.getPower()))
             .collect(Collectors.toList());
     }
@@ -34,7 +34,7 @@ public class ChargingStationController {
     public ChargingStationDTO createStation(@RequestBody ChargingStationDTO dto) {
         var station = stationService.create(
         dto.getName(),
-        dto.getLocation().getX(),  // 👈 now access via location
+        dto.getLocation().getX(), 
         dto.getLocation().getY(),
         dto.getPower()
     );
