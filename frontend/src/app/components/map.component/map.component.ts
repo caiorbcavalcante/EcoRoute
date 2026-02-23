@@ -155,38 +155,4 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.batteryService.resetBattery();
     this.chartService.drawRoute(fifoPath, totalDist);
   }
-
-  generateStations(): void {
-    for (let i = 0; i < 5; i++) {
-      const station = {
-        name: `Station ${Math.floor(Math.random() * 100)}`,
-        location: {
-          x: Math.random() * 200 - 100,
-          y: Math.random() * 200 - 100,
-        },
-        power: 50 + Math.random() * 100
-      };
-      this.chargingStationService.create(station).subscribe(() => {
-        this.refreshStations();
-      });
-    }
-  }
-
-  clearStations(): void {
-    this.chargingStationService.getAll().subscribe(stations => {
-      stations.forEach(s => {
-        if (s.id !== undefined) {
-          this.chargingStationService.delete(s.id).subscribe();
-        }
-      });
-      this.refreshStations();
-    });
-  }
-
-  private refreshStations(): void {
-    this.chargingStationService.getAll().subscribe(stations => {
-      this.chartService.setChargingStations(stations);
-      this.chartService.updateChargingStations(stations);
-    });
-  }
 }

@@ -12,4 +12,5 @@ public class ChargingStation {
     private String name;
     private Coordinate location;
     private double power; 
+    private boolean visited;
 }

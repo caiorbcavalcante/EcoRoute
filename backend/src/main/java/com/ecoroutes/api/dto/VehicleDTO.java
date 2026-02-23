@@ -8,4 +8,4 @@ public class VehicleDTO {
     double currentBattery;
     double consumptionRate;
     List<ItemDTO> cargo;
-} {}
+}

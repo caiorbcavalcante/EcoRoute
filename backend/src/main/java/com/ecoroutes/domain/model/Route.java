@@ -18,8 +18,9 @@ public class Route {
         this.path = path;
         this.totalDistance = totalDistance;
 
-        double consumptionRate = 0.05;
+        double consumptionRate = 0.05; // pode ser obtido do veículo futuramente
         this.energyUsed = totalDistance * consumptionRate;
-        this.remainingEnergy = vehicle.getMaxAutonomy() - energyUsed;
+        // Corrigido: getMaxBattery() em vez de getMaxAutonomy()
+        this.remainingEnergy = vehicle.getMaxBattery() - energyUsed;
     }
 }

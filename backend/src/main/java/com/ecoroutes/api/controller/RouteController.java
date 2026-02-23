@@ -21,6 +21,7 @@ public class RouteController {
 
     @PostMapping("/optimize")
     public RouteResponse optimize(@RequestBody RouteRequest request) {
+        // Cria o veículo com id e autonomia máxima (bateria inicial = máxima)
         Vehicle vehicle = new Vehicle(
                 request.getVehicleId(),
                 request.getVehicleMaxAutonomy()
@@ -39,7 +40,8 @@ public class RouteController {
                 ))
                 .collect(Collectors.toList());
 
-        Route route = routeService.execute(vehicle, depot, deliveries); // <- variável usada
+        // Chama o serviço de rota (ainda não passamos charging stations, pode ser lista vazia)
+        Route route = routeService.execute(vehicle, depot, deliveries);
 
         List<PointDTO> path = route.getPath()
                 .stream()

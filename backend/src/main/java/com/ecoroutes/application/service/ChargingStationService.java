@@ -22,7 +22,7 @@ public class ChargingStationService {
 
     public ChargingStation create(String name, double x, double y, double power) {
         Long id = idGenerator.getAndIncrement();
-        ChargingStation station = new ChargingStation(id, name, new Coordinate(x, y), power);
+        ChargingStation station = new ChargingStation(id, name, new Coordinate(x, y), power, false);
         store.put(id, station);
         return station;
     }
