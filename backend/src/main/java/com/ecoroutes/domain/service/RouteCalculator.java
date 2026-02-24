@@ -32,6 +32,7 @@ public class RouteCalculator {
         for (int i = 0; i < totalUnvisited; i++) {
             Coordinate currentPosition = current; // cópia efetivamente final para a lambda
 
+
             Delivery nearest = deliveries.stream()
                     .filter(d -> !d.isVisited())
                     .min((d1, d2) -> Double.compare(
@@ -42,7 +43,9 @@ public class RouteCalculator {
 
             // Segurança: se não encontrar, interrompe (improvável, mas evita NullPointer)
             if (nearest == null) break;
-
+            
+            vehicle.deliverOneItem(); // Entrega caso tiver ponto de delivery
+            
             double distance = current.distanceTo(nearest.getLocation());
             totalDistance += distance;
             current = nearest.getLocation();
