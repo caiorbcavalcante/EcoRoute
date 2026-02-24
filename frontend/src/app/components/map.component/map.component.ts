@@ -25,6 +25,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   manualMode = false;
   remainingEnergy = 100;
   totalDistance: number = 0;
+  completedDeliveries: number = 0;
+  totalDeliveries: number = 0;
   currentSegment?: number;
   distanceToNext?: number;
   remainingDistance?: number;
@@ -64,8 +66,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       alert('⚡ Vehicle ran out of battery!');
     });
 
-    this.segmentSub = this.animationState.currentSegmentIndex$.subscribe(index => {
+    this.segmentSub = this.animationState.currentSegmentIndex$.subscribe((index) => {
       this.currentSegment = index + 1;
+
+      // índice 0 = saindo do depósito
+      // último segmento = voltando pro depósito
+
+      if (index >= 0 && index < this.totalDeliveries) {
+        this.completedDeliveries = index + 1;
+      }
+
       this.cdr.detectChanges();
     });
 
@@ -159,6 +169,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.routeService.optimize(request).subscribe({
       next: (response) => {
         this.optimizedRoute = response.path;
+
+        this.totalDeliveries = deliveries.length;
+        this.completedDeliveries = 0;
+
         this.batteryService.resetBattery();
         this.totalDistance = response.totalDistance;
         this.chartService.drawRoute(response.path, response.totalDistance);

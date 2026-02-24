@@ -17,6 +17,8 @@ export class RouteInfoComponent implements OnInit, OnDestroy {
   @Input() totalSegments?: number;
   @Input() distanceToNext?: number;
   @Input() remainingDistance?: number; 
+  @Input() completedDeliveries: number = 0;
+  @Input() totalDeliveries: number = 0;
 
   energyConsumed: number = 0;
   remainingEnergy: number = 100;
@@ -33,5 +35,10 @@ export class RouteInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.batterySub?.unsubscribe();
+  }
+
+  get deliveryProgress(): number {
+    if (!this.totalDeliveries) return 0;
+    return (this.completedDeliveries / this.totalDeliveries) * 100;
   }
 }
