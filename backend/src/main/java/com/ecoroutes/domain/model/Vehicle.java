@@ -1,6 +1,8 @@
 package com.ecoroutes.domain.model;
 
 import com.ecoroutes.exceptions.BusinessException;
+import com.ecoroutes.exceptions.EmptyCargoException;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -36,10 +38,11 @@ public class Vehicle {
         currentBattery -= energyUsed;
     }
 
-    public void deliverOneItem() {
-        if (cargo.isEmpty()) {
-            throw new BusinessException("Vehicle has no items.");
+    public void deliverOneItem(){
+        if (cargo == null || cargo.isEmpty()){
+            throw new EmptyCargoException("The cargo doesn't seem to have any items...");
         }
+
         cargo.remove(0);
     }
 }

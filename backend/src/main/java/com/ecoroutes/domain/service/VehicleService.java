@@ -28,4 +28,9 @@ public class VehicleService {
                 .findFirst()
                 .orElseThrow(() -> new BusinessException("Vehicle not found"));
     }
+
+    public void deliverOneItem(Long vehicleId){
+        Vehicle vehicle = getVehicle(vehicleId);
+        vehicle.deliverOneItem();
+    }
 }
