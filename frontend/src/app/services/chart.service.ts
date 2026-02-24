@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import Chart from 'chart.js/auto';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { Point } from '../models/point.model';
-import { ChargingStation } from '../models/charing-station.model';
+import { ChargingStation } from '../models/charging-station.model';
 import { AnimationService } from './animation.service';
 import { glowTrailPlugin, vanShadowPlugin, getDirectionArrowsPlugin } from './chart-plugins';
 
@@ -23,7 +23,7 @@ export class ChartService {
     this.vanImage.onerror = () => console.warn('Van image failed to load');
   }
 
-  setChargingStations(stations: ChargingStation[]): void {
+  setChargingStations(stations: ChargingStation[]) {
     this.chargingStations = stations;
   }
 

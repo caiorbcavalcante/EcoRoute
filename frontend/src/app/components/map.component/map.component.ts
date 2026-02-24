@@ -1,11 +1,13 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { RouteService } from '../../services/route.service';
 import { ChartService } from '../../services/chart.service';
 import { BatteryService } from '../../services/battery.service';
 import { ChargingStationService } from '../../services/charging-station.service';
+import { AnimationStateService } from '../../services/animation-state.service';
 import { Point } from '../../models/point.model';
+import { ChargingStation } from '../../models/charging-station.model';
 import { RouteInfoComponent } from '../route-info.component/route-info.component';
 
 @Component({
@@ -17,6 +19,7 @@ import { RouteInfoComponent } from '../route-info.component/route-info.component
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('routeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+
   points: Point[] = [{ x: 0, y: 0 }];
   optimizedRoute: Point[] = [];
   manualMode = false;
@@ -26,38 +29,62 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   distanceToNext?: number;
   remainingDistance?: number;
 
+  fixedStations: ChargingStation[] = [
+    { name: '1', location: { x: 50, y: 50 }, power: 100 },
+    { name: '2', location: { x: -50, y: -50 }, power: 100 },
+    { name: '3', location: { x: 50, y: -50 }, power: 100 },
+    { name: '4', location: { x: -50, y: 50 }, power: 100 }
+  ];
+
   private batterySub?: Subscription;
+  private segmentSub?: Subscription;
+  private distanceSub?: Subscription;
+  private remainingSub?: Subscription;
 
   constructor(
     private routeService: RouteService,
     private chartService: ChartService,
     private batteryService: BatteryService,
-    private chargingStationService: ChargingStationService
+    private chargingStationService: ChargingStationService,
+    private animationState: AnimationStateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngAfterViewInit(): void {
     this.chartService.initialize(this.canvasRef.nativeElement, this.points);
-    
-    // Instantly reacts to battery changes without setInterval
+    this.chartService.setChargingStations(this.fixedStations);
+    this.chartService.updateChargingStations(this.fixedStations);
+
     this.batterySub = this.batteryService.batteryLevel$.subscribe(level => {
       this.remainingEnergy = level;
+      this.cdr.detectChanges();
     });
 
     this.batteryService.batteryDepleted$.subscribe(() => {
       alert('⚡ Vehicle ran out of battery!');
     });
 
-    this.chargingStationService.getAll().subscribe({
-      next: (stations) => {
-        this.chartService.setChargingStations(stations);
-        this.chartService.updateChargingStations(stations);
-      },
-      error: (err) => console.error('Erro ao carregar estações', err)
+    this.segmentSub = this.animationState.currentSegmentIndex$.subscribe(index => {
+      this.currentSegment = index + 1;
+      this.cdr.detectChanges();
+    });
+
+    this.distanceSub = this.animationState.distanceToNext$.subscribe(dist => {
+      this.distanceToNext = Math.round(dist * 100) / 100;
+      this.cdr.detectChanges();
+    });
+
+    this.remainingSub = this.animationState.remainingDistance$.subscribe(dist => {
+      this.remainingDistance = Math.round(dist * 100) / 100;
+      this.cdr.detectChanges();
     });
   }
 
   ngOnDestroy(): void {
     this.batterySub?.unsubscribe();
+    this.segmentSub?.unsubscribe();
+    this.distanceSub?.unsubscribe();
+    this.remainingSub?.unsubscribe();
   }
 
   toggleManualMode(): void {

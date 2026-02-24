@@ -46,14 +46,14 @@
   </div>
 
   <!-- PAINEL DE INFORMAÇÕES -->
-  <app-route-info
-    [totalDistance]="totalDistance"
-    [deliveriesCount]="optimizedRoute.length - 2"
-    [currentSegment]="currentSegment"
-    [totalSegments]="optimizedRoute.length - 1"
-    [distanceToNext]="distanceToNext"
-    [remainingDistance]="remainingDistance">
-  </app-route-info>
+<app-route-info
+  [totalDistance]="totalDistance"
+  [deliveriesCount]="points.length - 1"
+  [currentSegment]="currentSegment"
+  [totalSegments]="optimizedRoute.length - 1"
+  [distanceToNext]="distanceToNext"
+  [remainingDistance]="remainingDistance">
+</app-route-info>
 
   <!-- DICA -->
   <div class="hint" *ngIf="manualMode">
