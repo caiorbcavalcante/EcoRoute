@@ -15,7 +15,7 @@ export class AnimationService {
   private cameraX = 0;
   private cameraY = 0;
   private isRecharging = false;
-  private consumptionRate = 0.05; // mesmo valor do backend/BatteryService
+  private consumptionRate = 0.01; // mesmo valor do backend/BatteryService
 
   constructor(
     private batteryService: BatteryService,
@@ -33,11 +33,14 @@ export class AnimationService {
     }
   }
 
-  animateVan(chart: Chart, route: Point[], chargingStations: ChargingStation[]): void {
+  animateVan(chart: Chart, route: Point[], chargingStations: ChargingStation[], isDetour = false): void {
     if (!chart || route.length < 2) return;
 
     this.clearAnimation();
-    this.batteryService.resetBattery();
+
+    if (!isDetour){
+      this.batteryService.resetBattery();
+    }
 
     let segmentIndex = 0;
     let progress = 0;
@@ -64,9 +67,17 @@ export class AnimationService {
 
     // Função para verificar se a bateria é suficiente para um segmento
     const hasEnoughBattery = (from: Point, to: Point): boolean => {
-      const dist = distance(from, to);
-      const required = dist * this.consumptionRate;
-      return this.batteryService.getBatteryLevel() >= required;
+      const distToNext = distance(from, to);
+      const nextStation = findNearestStation(to); // estação perto do destino
+
+      if (!nextStation) return true; // se não houver estação, continua (evita travar)
+
+      const distToStation = distance(to, { x: nextStation.location.x, y: nextStation.location.y });
+
+      // Gasto total = (ida ao ponto + ida à estação) * taxa * margem de segurança
+      const totalRequired = (distToNext + distToStation) * this.consumptionRate * 1.5;
+
+      return this.batteryService.getBatteryLevel() >= totalRequired;
     };
 
     // Função para inserir um desvio na rota
@@ -87,31 +98,34 @@ export class AnimationService {
       const end = route[segmentIndex + 1];
       if (!start || !end) return;
 
+      if (this.isRecharging) {
+        this.animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
       // --- Verificação de bateria antes de iniciar um novo segmento ---
-      if (progress === 0 && !hasEnoughBattery(start, end)) {
-        // Bateria insuficiente para o próximo trecho: precisa desviar para estação
-        console.log('Battery low, diverting to charging station');
+      const currentBattery = this.batteryService.getBatteryLevel();
+      const batteryThreshold = 30; // Desvia se cair abaixo de 30%
 
-        // Para a animação atual
-        this.clearAnimation();
+      if (currentBattery < batteryThreshold && !isDetour && !this.isRecharging) {
+        const currentPos = { x: this.cameraX || start.x, y: this.cameraY || start.y };
+        const nearest = findNearestStation(currentPos);
 
-        // Calcula posição atual (é o ponto start, pois progress==0)
-        const currentPos = start;
+        if (nearest) {
+          console.log('Bateria crítica! Mudando rota para estação próxima.');
+          this.clearAnimation();
 
-        // Constrói nova rota com desvio
-        const newRoute = insertDetour(currentPos, end);
-        if (newRoute !== route) {
-          // Atualiza a rota no gráfico (substitui dataset da rota)
+          const stationPoint = { x: nearest.location.x, y: nearest.location.y };
+
+          // Nova rota: onde estou agora -> estação -> ponto que eu ia -> resto da rota
+          const newRoute = [currentPos, stationPoint, end, ...route.slice(segmentIndex + 2)];
+
           chart.data.datasets[2].data = newRoute;
           chart.update('none');
 
-          // Reinicia a animação com a nova rota
-          this.animateVan(chart, newRoute, chargingStations);
-        } else {
-          // Se não encontrou estação, continua (vai descarregar)
-          // Opcional: parar animação ou alertar
+          this.animateVan(chart, newRoute, chargingStations, true);
+          return;
         }
-        return;
       }
       // ----------------------------------------------------------------
 
@@ -131,7 +145,7 @@ export class AnimationService {
       const currentY = start.y + (end.y - start.y) * eased;
 
       // Verifica se está em uma estação (para recarga)
-      const nearbyStation = chargingStations.find(station => {
+      const nearbyStation = chargingStations.find((station) => {
         const dx = currentX - station.location.x;
         const dy = currentY - station.location.y;
         return Math.sqrt(dx * dx + dy * dy) < 3; // raio de detecção
@@ -143,7 +157,7 @@ export class AnimationService {
         // Opcional: delay visual
         setTimeout(() => {
           this.isRecharging = false;
-        }, 1000);
+        }, 1500);
       }
 
       const dx = end.x - start.x;
@@ -153,6 +167,7 @@ export class AnimationService {
       this.batteryService.consume(distanceStep);
 
       if (this.batteryService.getBatteryLevel() <= 0) {
+        console.error('The battery ended in the middle of the route');
         this.clearAnimation();
         return;
       }
@@ -174,7 +189,7 @@ export class AnimationService {
       const targetAngle = Math.atan2(endPixelY - startPixelY, endPixelX - startPixelX);
       const diff = this.normalizeAngle(targetAngle - this.currentAngle);
       this.currentAngle += diff * 0.15;
-      const rotationDegrees = (this.currentAngle * 180 / Math.PI) + 90;
+      const rotationDegrees = (this.currentAngle * 180) / Math.PI + 90;
 
       // Atualiza dataset da van
       (chart.data.datasets[3].data as any) = [{ x: currentX, y: currentY }];
