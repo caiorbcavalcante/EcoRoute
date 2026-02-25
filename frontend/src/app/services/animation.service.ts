@@ -4,6 +4,7 @@ import { Point } from '../models/point.model';
 import { ChargingStation } from '../models/charging-station.model';
 import { BatteryService } from './battery.service';
 import { AnimationStateService } from './animation-state.service';
+import { iif } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +34,7 @@ export class AnimationService {
     }
   }
 
-  animateVan(chart: Chart, route: Point[], chargingStations: ChargingStation[], isDetour = false): void {
+  animateVan(chart: Chart, route: Point[], chargingStations: ChargingStation[], isDetour = false, initialIndex = 0): void {
     if (!chart || route.length < 2) return;
 
     this.clearAnimation();
@@ -112,6 +113,7 @@ export class AnimationService {
         const nearest = findNearestStation(currentPos);
 
         if (nearest) {
+          const currentTotal = initialIndex + segmentIndex;
           console.log('Bateria crítica! Mudando rota para estação próxima.');
           this.clearAnimation();
 
@@ -123,7 +125,7 @@ export class AnimationService {
           chart.data.datasets[2].data = newRoute;
           chart.update('none');
 
-          this.animateVan(chart, newRoute, chargingStations, true);
+          this.animateVan(chart, newRoute, chargingStations, true, currentTotal);
           return;
         }
       }
@@ -155,6 +157,7 @@ export class AnimationService {
         this.isRecharging = true;
         this.batteryService.recharge(() => {
           this.isRecharging = false;
+          isDetour = false; // avisando que não está mais em desvio (para possibilitar desviar novamente)
           console.log('battery full, heading back');
         });
       }
@@ -174,7 +177,7 @@ export class AnimationService {
       // Atualiza estado da animação (para o painel)
       const distanceToNext = segmentLength * (1 - progress);
       const remainingDistance = this.calculateRemainingDistance(route, segmentIndex, progress);
-      this.animationState.currentSegmentIndex$.next(segmentIndex);
+      this.animationState.currentSegmentIndex$.next(segmentIndex + initialIndex);
       this.animationState.distanceToNext$.next(distanceToNext);
       this.animationState.remainingDistance$.next(remainingDistance);
 
