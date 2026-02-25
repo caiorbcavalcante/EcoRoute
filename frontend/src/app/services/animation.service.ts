@@ -151,13 +151,12 @@ export class AnimationService {
         return Math.sqrt(dx * dx + dy * dy) < 3; // raio de detecção
       });
 
-      if (nearbyStation && !this.isRecharging) {
+      if (nearbyStation && !this.isRecharging && currentBattery < 98) {
         this.isRecharging = true;
-        this.batteryService.recharge(); // recarrega instantaneamente (pode ajustar)
-        // Opcional: delay visual
-        setTimeout(() => {
+        this.batteryService.recharge(() => {
           this.isRecharging = false;
-        }, 1500);
+          console.log('battery full, heading back');
+        });
       }
 
       const dx = end.x - start.x;
