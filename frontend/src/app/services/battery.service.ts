@@ -6,7 +6,7 @@ import { Subject, BehaviorSubject } from 'rxjs';
 })
 export class BatteryService {
   private readonly MAX_BATTERY = 100;
-  private readonly CONSUMPTION_RATE = 0.1; // CASO FOR TESTAR CONSUMO DE ENERGIA MUDAR AQUI
+  private readonly CONSUMPTION_RATE = 0.2; // CASO FOR TESTAR CONSUMO DE ENERGIA MUDAR AQUI
 
   private chargingInterval?: any;
 

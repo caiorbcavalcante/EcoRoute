@@ -21,11 +21,19 @@ public class RouteController {
 
     @PostMapping("/optimize")
     public RouteResponse optimize(@RequestBody RouteRequest request) {
-        // Cria o veículo com id e autonomia máxima (bateria inicial = máxima)
+        
         Vehicle vehicle = new Vehicle(
                 request.getVehicleId(),
                 request.getVehicleMaxAutonomy()
         );
+
+        // 1. Convert incoming deliveries into Items for the cargo
+        List<Item> cargo = request.getDeliveries().stream()
+                .map(d -> new Item("Package " + d.getId(), 1))
+                .collect(Collectors.toList());
+
+        // 2. Load the cargo into the vehicle
+        vehicle.setCargo(cargo);
 
         Depot depot = new Depot(
                 new Coordinate(request.getDepotX(), request.getDepotY())
@@ -40,7 +48,6 @@ public class RouteController {
                 ))
                 .collect(Collectors.toList());
 
-        // Chama o serviço de rota (ainda não passamos charging stations, pode ser lista vazia)
         Route route = routeService.execute(vehicle, depot, deliveries);
 
         List<PointDTO> path = route.getPath()

@@ -161,7 +161,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }));
     const request = {
       vehicleId: 1,
-      vehicleMaxAutonomy: 100,
+      vehicleMaxAutonomy: 5000,
       depotX: depot.x,
       depotY: depot.y,
       deliveries
@@ -177,7 +177,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.totalDistance = response.totalDistance;
         this.chartService.drawRoute(response.path, response.totalDistance);
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Backend BusinessException Message:', err.error);
+        alert(`Erro ao otimizar rota: ${err.error}`);
+      } 
     });
   }
 
