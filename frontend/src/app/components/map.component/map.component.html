@@ -1,23 +1,23 @@
 <div class="container">
 
-  <!-- CONTROLES -->
+  <!-- Botões de controle principais -->
   <div class="controls">
     <button
       class="manual"
       [class.active]="manualMode"
       (click)="toggleManualMode()">
-      {{ manualMode ? 'Manual Mode Active' : 'Enable Manual Mode' }}
+      {{ manualMode ? 'Modo Manual Ativo' : 'Modo Manual' }}
     </button>
-    <button class="primary" (click)="addRandomPoint()">+ Random Point</button>
-    <button class="primary" (click)="generate20RandomPoints()">+ 20 Random Points</button>
+    <button class="primary" (click)="addRandomPoint()">+ Ponto Aleatório</button>
+    <button class="primary" (click)="generate20RandomPoints()">+ 20 Pontos</button>
     <button class="primary" (click)="optimize()">Otimizar (NN)</button>
     <button class="primary" (click)="fifoRoute()">Rota FIFO</button>
-    <button class="danger" (click)="clear()">Clear All</button>
+    <button class="danger" (click)="clear()">Limpar Tudo</button>
   </div>
 
-  <!-- VELOCIDADE -->
+  <!-- Controle deslizante da velocidade da van -->
   <div class="speed-control">
-    Van Speed:
+    Velocidade da Van:
     <input
       type="range"
       min="0.5"
@@ -28,15 +28,15 @@
     />
   </div>
 
-  <!-- BATERIA -->
+  <!-- Indicador de bateria -->
   <div class="battery">
-    🔋 Battery:
+    🔋 Bateria:
     <span [style.color]="remainingEnergy < 0 ? 'red' : '#00ffcc'">
       {{ remainingEnergy | number:'1.0-2' }} kWh
     </span>
   </div>
 
-  <!-- MAPA -->
+  <!-- Área do mapa (canvas) -->
   <div class="map-container" style="height: 600px;">
     <canvas
       #routeCanvas
@@ -45,21 +45,21 @@
     </canvas>
   </div>
 
-  <!-- PAINEL DE INFORMAÇÕES -->
-<app-route-info
-  [totalDistance]="totalDistance"
-  [deliveriesCount]="points.length - 1"
-  [completedDeliveries]="completedDeliveries"
-  [totalDeliveries]="totalDeliveries"
-  [currentSegment]="currentSegment"
-  [totalSegments]="optimizedRoute.length - 1"
-  [distanceToNext]="distanceToNext"
-  [remainingDistance]="remainingDistance">
-</app-route-info>
+  <!-- Painel com informações detalhadas da rota -->
+  <app-route-info
+    [totalDistance]="totalDistance"
+    [deliveriesCount]="points.length - 1"
+    [completedDeliveries]="completedDeliveries"
+    [totalDeliveries]="totalDeliveries"
+    [currentSegment]="currentSegment"
+    [totalSegments]="optimizedRoute.length - 1"
+    [distanceToNext]="distanceToNext"
+    [remainingDistance]="remainingDistance">
+  </app-route-info>
 
-  <!-- DICA -->
+  <!-- Dica para o modo manual -->
   <div class="hint" *ngIf="manualMode">
-    Click anywhere on the map to add delivery points.
+    Clique em qualquer lugar do mapa para adicionar pontos de entrega.
   </div>
 
 </div>

@@ -19,34 +19,37 @@ public class ChargingStationController {
         this.stationService = stationService;
     }
 
+    // Retorna todas as estações de recarga cadastradas
     @GetMapping
     public List<ChargingStationDTO> getAllStations() {
-    return stationService.findAll().stream()
-            .map(s -> new ChargingStationDTO(
-                    s.getId(),
-                    s.getName(),
-                    new LocationDTO(s.getLocation().getX(), s.getLocation().getY()), 
-                    s.getPower()))
-            .collect(Collectors.toList());
+        return stationService.findAll().stream()
+                .map(s -> new ChargingStationDTO(
+                        s.getId(),
+                        s.getName(),
+                        new LocationDTO(s.getLocation().getX(), s.getLocation().getY()),
+                        s.getPower()))
+                .collect(Collectors.toList());
     }
 
+    // Cria uma nova estação com os dados enviados (nome, localização, potência)
     @PostMapping
     public ChargingStationDTO createStation(@RequestBody ChargingStationDTO dto) {
         var station = stationService.create(
-        dto.getName(),
-        dto.getLocation().getX(), 
-        dto.getLocation().getY(),
-        dto.getPower()
-    );
-    
-    return new ChargingStationDTO(
-        station.getId(),
-        station.getName(),
-        new LocationDTO(station.getLocation().getX(), station.getLocation().getY()),
-        station.getPower()
+                dto.getName(),
+                dto.getLocation().getX(),
+                dto.getLocation().getY(),
+                dto.getPower()
+        );
+
+        return new ChargingStationDTO(
+                station.getId(),
+                station.getName(),
+                new LocationDTO(station.getLocation().getX(), station.getLocation().getY()),
+                station.getPower()
         );
     }
 
+    // Remove uma estação pelo seu ID
     @DeleteMapping("/{id}")
     public void deleteStation(@PathVariable Long id) {
         stationService.delete(id);

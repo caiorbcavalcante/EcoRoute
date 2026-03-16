@@ -13,15 +13,15 @@ public class VehicleService {
 
     private final List<Vehicle> vehicles = new ArrayList<>();
 
+    // Cria um veículo com autonomia máxima e carga inicial
     public Vehicle createVehicle(Long id, double maxAutonomy, List<Item> items) {
-        // Usa o novo construtor que aceita id e maxBattery
         Vehicle vehicle = new Vehicle(id, maxAutonomy);
-        // Adiciona os itens ao cargo (substitui a lista vazia)
         vehicle.setCargo(new ArrayList<>(items));
         vehicles.add(vehicle);
         return vehicle;
     }
 
+    // Busca veículo por ID; lança exceção se não existir
     public Vehicle getVehicle(Long id) {
         return vehicles.stream()
                 .filter(v -> v.getId().equals(id))
@@ -29,6 +29,7 @@ public class VehicleService {
                 .orElseThrow(() -> new BusinessException("Vehicle not found"));
     }
 
+    // Entrega um item do veículo (remove o primeiro da lista)
     public void deliverOneItem(Long vehicleId){
         Vehicle vehicle = getVehicle(vehicleId);
         vehicle.deliverOneItem();

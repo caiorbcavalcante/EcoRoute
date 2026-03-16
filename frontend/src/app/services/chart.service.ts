@@ -15,7 +15,7 @@ export class ChartService {
   private chart?: Chart;
   private vanImage = new Image();
   private chargingStations: ChargingStation[] = [];
-  private currentRoute: Point[] = []; 
+  private currentRoute: Point[] = [];
 
   constructor(private animationService: AnimationService) {
     this.vanImage.src = '/van-updated.png';
@@ -27,6 +27,7 @@ export class ChartService {
     this.chargingStations = stations;
   }
 
+  // Cria o gráfico com todos os datasets (pontos, depósito, rota, van, estações)
   initialize(canvas: HTMLCanvasElement, points: Point[]): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -83,7 +84,7 @@ export class ChartService {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        animation: false,
+        animation: false, // controlado manualmente pela animação
         scales: {
           x: { type: 'linear', min: -100, max: 100 },
           y: { type: 'linear', min: -100, max: 100 }
@@ -112,6 +113,7 @@ export class ChartService {
     return this.chart;
   }
 
+  // Atualiza apenas os pontos de entrega e o depósito (quando o usuário adiciona/remove)
   updatePoints(points: Point[]): void {
     if (!this.chart) return;
     const depot = points.length > 0 ? points[0] : { x: 0, y: 0 };
@@ -121,31 +123,34 @@ export class ChartService {
     this.chart.update();
   }
 
+  // Desenha uma nova rota e inicia a animação da van
   drawRoute(route: Point[], totalDistance?: number): void {
     if (!this.chart) return;
-    
+
     this.animationService.clearAnimation();
     this.currentRoute = route;
     this.chart.data.datasets[2].data = route;
     this.chart.update();
-    
+
     if (route.length > 1) {
       this.animationService.animateVan(this.chart, route, this.chargingStations);
     }
   }
 
+  // Limpa a rota e reposiciona a van no depósito
   clearRoute(): void {
     if (!this.chart) return;
-    
+
     this.animationService.clearAnimation();
     this.currentRoute = [];
     this.chart.data.datasets[2].data = [];
-    
+
     const depot = this.chart.data.datasets[1].data[0] as Point;
     (this.chart.data.datasets[3].data as any) = [depot];
     this.chart.update();
   }
 
+  // Atualiza as estações de recarga no gráfico
   updateChargingStations(stations: ChargingStation[]): void {
     if (!this.chart) return;
     this.chart.data.datasets[4].data = stations.map(s => s.location);

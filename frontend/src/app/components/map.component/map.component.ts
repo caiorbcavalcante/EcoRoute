@@ -20,6 +20,7 @@ import { RouteInfoComponent } from '../route-info.component/route-info.component
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('routeCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
+  // Lista de pontos (primeiro é o depósito)
   points: Point[] = [{ x: 0, y: 0 }];
   optimizedRoute: Point[] = [];
   manualMode = false;
@@ -31,6 +32,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   distanceToNext?: number;
   remainingDistance?: number;
 
+  // Estações fixas definidas manualmente
   fixedStations: ChargingStation[] = [
     { name: '1', location: { x: 50, y: 50 }, power: 100 },
     { name: '2', location: { x: -50, y: -50 }, power: 100 },
@@ -53,10 +55,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
+    // Inicializa o gráfico e carrega as estações fixas
     this.chartService.initialize(this.canvasRef.nativeElement, this.points);
     this.chartService.setChargingStations(this.fixedStations);
     this.chartService.updateChargingStations(this.fixedStations);
 
+    // Atualiza o medidor de bateria em tempo real
     this.batterySub = this.batteryService.batteryLevel$.subscribe(level => {
       this.remainingEnergy = level;
       this.cdr.detectChanges();
@@ -66,12 +70,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       alert('⚡ Vehicle ran out of battery!');
     });
 
+    // Controla o segmento atual e quantas entregas já foram feitas
     this.segmentSub = this.animationState.currentSegmentIndex$.subscribe((index) => {
       this.currentSegment = index + 1;
 
       // índice 0 = saindo do depósito
       // último segmento = voltando pro depósito
-
       if (index >= 0 && index < this.totalDeliveries) {
         this.completedDeliveries = index + 1;
       }
@@ -79,11 +83,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
+    // Distância até o próximo ponto
     this.distanceSub = this.animationState.distanceToNext$.subscribe(dist => {
       this.distanceToNext = Math.round(dist * 100) / 100;
       this.cdr.detectChanges();
     });
 
+    // Distância total restante
     this.remainingSub = this.animationState.remainingDistance$.subscribe(dist => {
       this.remainingDistance = Math.round(dist * 100) / 100;
       this.cdr.detectChanges();
@@ -91,6 +97,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Limpeza das inscrições
     this.batterySub?.unsubscribe();
     this.segmentSub?.unsubscribe();
     this.distanceSub?.unsubscribe();
@@ -129,6 +136,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.chartService.clearRoute();
   }
 
+  // Adiciona ponto manual clicando no mapa
   onCanvasClick(event: MouseEvent): void {
     if (!this.manualMode) return;
     const chart = this.chartService.getChart();
@@ -151,6 +159,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.chartService.setSpeed(value);
   }
 
+  // Chama o backend para otimizar a rota (Nearest Neighbor)
   optimize(): void {
     if (this.points.length < 2) return;
     const depot = this.points[0];
@@ -180,10 +189,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       error: (err) => {
         console.error('Backend BusinessException Message:', err.error);
         alert(`Erro ao otimizar rota: ${err.error}`);
-      } 
+      }
     });
   }
 
+  // Rota simples: FIFO (ordem de inserção)
   fifoRoute(): void {
     if (this.points.length < 2) return;
     const depot = this.points[0];

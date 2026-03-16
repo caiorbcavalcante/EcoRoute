@@ -2,7 +2,6 @@ package com.ecoroutes.domain.service;
 
 import com.ecoroutes.domain.model.*;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,25 +13,25 @@ public class RouteCalculator {
             Depot depot,
             List<Delivery> deliveries
     ) {
-
         List<Coordinate> path = new ArrayList<>();
 
-        // Reset dos status de visita
+        // Garantir que nenhuma entrega comece como visitada
         deliveries.forEach(d -> d.setVisited(false));
 
+        // Ponto de partida: o depósito
         Coordinate current = depot.getLocation();
         path.add(current);
 
         double totalDistance = 0;
 
-        // Número de entregas não visitadas (já que começamos todas como não visitadas)
+        // Número total de entregas que precisam ser feitas
         int totalUnvisited = (int) deliveries.stream().filter(d -> !d.isVisited()).count();
 
-        // Loop exatamente o número de entregas (cada iteração encontra a mais próxima)
+        // Enquanto houver entregas, vai escolhendo a mais próxima
         for (int i = 0; i < totalUnvisited; i++) {
-            Coordinate currentPosition = current; // cópia efetivamente final para a lambda
+            Coordinate currentPosition = current;
 
-
+            // Pega a entrega não visitada mais perto da posição atual
             Delivery nearest = deliveries.stream()
                     .filter(d -> !d.isVisited())
                     .min((d1, d2) -> Double.compare(
@@ -41,23 +40,25 @@ public class RouteCalculator {
                     ))
                     .orElse(null);
 
-            // Segurança: se não encontrar, interrompe (improvável, mas evita NullPointer)
-            if (nearest == null) break;
-            
-            vehicle.deliverOneItem(); // Entrega caso tiver ponto de delivery
-            
+            if (nearest == null) break; // Por segurança, não que deva acontecer
+
+            vehicle.deliverOneItem();
+
+            // Calcula distância percorrida até essa entrega
             double distance = current.distanceTo(nearest.getLocation());
             totalDistance += distance;
+
+            // Atualiza posição atual e marca como visitada
             current = nearest.getLocation();
             path.add(current);
             nearest.setVisited(true);
         }
 
-        // Retorno ao depósito (fecha o ciclo)
+        // Depois de todas as entregas, volta pro depósito
         totalDistance += current.distanceTo(depot.getLocation());
         path.add(depot.getLocation());
 
-        // Cria e retorna o objeto Route
+        // Monta o objeto final com rota e distância total
         return new Route(vehicle, path, totalDistance);
     }
 }

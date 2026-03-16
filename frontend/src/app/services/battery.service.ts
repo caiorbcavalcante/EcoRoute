@@ -6,14 +6,15 @@ import { Subject, BehaviorSubject } from 'rxjs';
 })
 export class BatteryService {
   private readonly MAX_BATTERY = 100;
-  private readonly CONSUMPTION_RATE = 0.2; // CASO FOR TESTAR CONSUMO DE ENERGIA MUDAR AQUI
+  private readonly CONSUMPTION_RATE = 0.2; // TROQUE AQUI CASO QUEIRA TESTAR CONSUMO
 
   private chargingInterval?: any;
 
-  // BehaviorSubject holds the current state and emits it immediately to any new subscribers
+  // Estado atual da bateria (inicia cheia)
   private batteryLevelSubject = new BehaviorSubject<number>(this.MAX_BATTERY);
   batteryLevel$ = this.batteryLevelSubject.asObservable();
 
+  // Disparado quando a bateria chega a zero
   private batteryDepletedSubject = new Subject<void>();
   batteryDepleted$ = this.batteryDepletedSubject.asObservable();
 
@@ -21,10 +22,12 @@ export class BatteryService {
     return this.batteryLevelSubject.value;
   }
 
+  // Volta a bateria ao máximo
   resetBattery(): void {
     this.batteryLevelSubject.next(this.MAX_BATTERY);
   }
 
+  // Reduz a bateria conforme a distância percorrida
   consume(distance: number): void {
     let currentLevel = this.batteryLevelSubject.value;
     currentLevel -= distance * this.CONSUMPTION_RATE;
@@ -38,8 +41,9 @@ export class BatteryService {
     }
   }
 
+  // Recarrega gradualmente até o máximo, opcionalmente chama callback ao final
   recharge(onComplete?: () => void): void {
-    // Se já houver um carregamento em curso, cancela para não duplicar a velocidade
+    // Evita múltiplas recargas simultâneas
     if (this.chargingInterval) {
       clearInterval(this.chargingInterval);
     }
@@ -48,11 +52,9 @@ export class BatteryService {
       const current = this.getBatteryLevel();
 
       if (current < this.MAX_BATTERY) {
-        // aumenta a bateria gradualmente
         const nextValue = Math.min(current + 2, this.MAX_BATTERY);
         this.batteryLevelSubject.next(nextValue);
       } else {
-        
         clearInterval(this.chargingInterval);
         this.chargingInterval = undefined;
 
@@ -60,6 +62,6 @@ export class BatteryService {
           onComplete();
         }
       }
-    }, 50); 
+    }, 50); // recarga rápida (50ms)
   }
 }

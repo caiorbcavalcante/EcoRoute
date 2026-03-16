@@ -1,4 +1,4 @@
-/* ===== PAGE ===== */
+/* ===== ESTILOS GLOBAIS DA PÁGINA ===== */
 .container {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-/* ===== CONTROLS ===== */
+/* ===== BOTÕES DE CONTROLE ===== */
 .controls {
   margin-bottom: 20px;
 }
@@ -59,7 +59,7 @@ button.manual.active {
   box-shadow: 0 0 15px #ffaa00;
 }
 
-/* ===== SPEED SLIDER ===== */
+/* ===== CONTROLE DE VELOCIDADE ===== */
 .speed-control {
   margin-top: 10px;
   color: #00ffcc;
@@ -72,11 +72,11 @@ button.manual.active {
   cursor: pointer;
 }
 
-/* ===== MAP CONTAINER ===== */
+/* ===== ÁREA DO MAPA ===== */
 .map-container {
   width: 100%;
   max-width: 1100px;
-  height: 600px; /* altura maior */
+  height: 600px;
   margin: 20px auto 0 auto;
   background-color: #1e1e1e;
   border-radius: 12px;
@@ -85,7 +85,7 @@ button.manual.active {
   box-sizing: border-box;
 }
 
-/* ===== CANVAS ===== */
+/* ===== CANVAS ONDE O GRÁFICO É DESENHADO ===== */
 .map-canvas {
   width: 100% !important;
   height: 100% !important;
@@ -95,7 +95,7 @@ button.manual.active {
   cursor: crosshair;
 }
 
-/* ===== HINT ===== */
+/* ===== DICA DO MODO MANUAL ===== */
 .hint {
   color: #ffaa00;
   margin-top: 12px;
@@ -103,10 +103,10 @@ button.manual.active {
   font-size: 14px;
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== AJUSTES PARA TELAS MENORES ===== */
 @media (max-width: 768px) {
   .map-container {
-    height: 450px;           /* ajustado */
+    height: 450px;
   }
 
   button {

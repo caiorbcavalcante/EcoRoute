@@ -5,12 +5,12 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AnimationStateService {
-  // Índice do segmento atual (0-based)
+  // Índice do trecho atual da rota (começa em 0)
   currentSegmentIndex$ = new BehaviorSubject<number>(0);
   
-  // Distância até o próximo ponto (no segmento atual)
+  // Distância (em unidades) até o próximo ponto de entrega
   distanceToNext$ = new BehaviorSubject<number>(0);
   
-  // Distância total restante (inclui o restante do segmento atual + todos os seguintes)
+  // Distância total que ainda falta percorrer até o fim da rota
   remainingDistance$ = new BehaviorSubject<number>(0);
 }

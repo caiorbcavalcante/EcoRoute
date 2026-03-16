@@ -16,20 +16,20 @@ import java.util.List;
 public class Vehicle {
 
     private Long id;
-    private double maxBattery;          // capacidade máxima da bateria
-    private double currentBattery;       // carga atual
-    private double consumptionRate;       // consumo por unidade de distância
+    private double maxBattery;
+    private double currentBattery;
+    private double consumptionRate;
     private List<Item> cargo = new ArrayList<>();
 
-    // Construtor adicional para facilitar criação com valores padrão
     public Vehicle(Long id, double maxBattery) {
         this.id = id;
         this.maxBattery = maxBattery;
-        this.currentBattery = maxBattery;        // começa com bateria cheia
-        this.consumptionRate = 0.05;              // valor padrão (ajuste conforme necessidade)
+        this.currentBattery = maxBattery;
+        this.consumptionRate = 0.05;
         this.cargo = new ArrayList<>();
     }
 
+    // Reduz a bateria conforme a distância percorrida
     public void consume(double distance) {
         double energyUsed = distance * consumptionRate;
         if (currentBattery < energyUsed) {
@@ -38,6 +38,7 @@ public class Vehicle {
         currentBattery -= energyUsed;
     }
 
+    // Entrega um item do veículo (remove do início da lista)
     public void deliverOneItem(){
         if (cargo == null || cargo.isEmpty()){
             throw new EmptyCargoException("The cargo doesn't seem to have any items...");
